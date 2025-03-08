@@ -1,0 +1,2837 @@
+#######################
+# Input Schema
+#######################
+
+enum AllowedCurrency {
+	USD
+	ETHEREUM
+	SPANK
+	BOOTY
+	BITCOIN
+}
+
+enum AllowedTerminacion {
+	AR
+	ER
+	IR
+}
+
+enum AllowedTongue {
+	ENGLISH
+	SPANISH
+}
+
+enum AllowedTypeAffix {
+	PREFIX
+	PREFIXIOID
+	INFIX
+	CIRCUMFIX
+	INTERFIX
+	DUPLIFIX
+	TRANSFIX
+	SIMULFIX
+	SUPRAFIX
+	DISFIX
+	STEM
+	SUFFIX
+	SUFFIXOID
+	NA
+}
+
+enum MediaType {
+	AUDIO
+	IMAGE
+	TEXT
+	VIDEO
+}
+
+type Account {
+	id: ID
+	type: String
+	provider: String @search(by: [hash])
+	providerAccountId: String @search(by: [hash])
+	refreshToken: String
+	expires_at: Int64
+	accessToken: String
+	token_type: String
+	refresh_token: String
+	access_token: String
+	scope: String
+	id_token: String
+	session_state: String
+	user(filter: UserFilter): User @hasInverse(field: "accounts")
+}
+
+type Activity {
+	id: ID!
+	endTime: DateTime @search
+	startTime: DateTime @search
+	media(filter: MediaFilter, order: MediaOrder, first: Int, offset: Int): [Media] @hasInverse(field: activity)
+	name: String @search(by: [hash])
+	note(filter: NoteFilter, order: NoteOrder, first: Int, offset: Int): [Note] @hasInverse(field: activity)
+	person(filter: PersonFilter, order: PersonOrder, first: Int, offset: Int): [Person] @hasInverse(field: activity)
+	tag(filter: TagFilter, order: TagOrder, first: Int, offset: Int): [Tag] @hasInverse(field: activity)
+	mediaAggregate(filter: MediaFilter): MediaAggregateResult
+	noteAggregate(filter: NoteFilter): NoteAggregateResult
+	personAggregate(filter: PersonFilter): PersonAggregateResult
+	tagAggregate(filter: TagFilter): TagAggregateResult
+}
+
+type Affix {
+	id: ID!
+	example: [String] @search(by: [hash])
+	meaning: [String] @search(by: [fulltext,hash])
+	media(filter: MediaFilter, order: MediaOrder, first: Int, offset: Int): [Media] @hasInverse(field: affix)
+	morpheme: String @search(by: [hash])
+	note(filter: NoteFilter, order: NoteOrder, first: Int, offset: Int): [Note] @hasInverse(field: affix)
+	tongue: AllowedTongue @search(by: [exact])
+	type: [AllowedTypeAffix]
+	mediaAggregate(filter: MediaFilter): MediaAggregateResult
+	noteAggregate(filter: NoteFilter): NoteAggregateResult
+}
+
+type BlogPost {
+	id: ID!
+	author(filter: PersonFilter, order: PersonOrder, first: Int, offset: Int): [Person] @hasInverse(field: blogPost)
+	body: String @search(by: [fulltext])
+	comment(filter: CommentFilter, order: CommentOrder, first: Int, offset: Int): [Comment] @hasInverse(field: blogPost)
+	media(filter: MediaFilter, order: MediaOrder, first: Int, offset: Int): [Media] @hasInverse(field: blogPost)
+	note(filter: NoteFilter, order: NoteOrder, first: Int, offset: Int): [Note] @hasInverse(field: blogPost)
+	publishDate: DateTime @search
+	published: Boolean
+	tag(filter: TagFilter, order: TagOrder, first: Int, offset: Int): [Tag] @hasInverse(field: blogPost)
+	title: String! @search(by: [hash])
+	authorAggregate(filter: PersonFilter): PersonAggregateResult
+	commentAggregate(filter: CommentFilter): CommentAggregateResult
+	mediaAggregate(filter: MediaFilter): MediaAggregateResult
+	noteAggregate(filter: NoteFilter): NoteAggregateResult
+	tagAggregate(filter: TagFilter): TagAggregateResult
+}
+
+type Budget {
+	id: ID!
+	budgetName: String! @search(by: [hash])
+	budgetValue: Float @search
+	media(filter: MediaFilter, order: MediaOrder, first: Int, offset: Int): [Media] @hasInverse(field: budget)
+	note(filter: NoteFilter, order: NoteOrder, first: Int, offset: Int): [Note] @hasInverse(field: budget)
+	partner(filter: PersonFilter, order: PersonOrder, first: Int, offset: Int): [Person] @hasInverse(field: budget)
+	tag(filter: TagFilter, order: TagOrder, first: Int, offset: Int): [Tag] @hasInverse(field: budget)
+	transaction(filter: TransactionFilter, order: TransactionOrder, first: Int, offset: Int): [Transaction] @hasInverse(field: budget)
+	mediaAggregate(filter: MediaFilter): MediaAggregateResult
+	noteAggregate(filter: NoteFilter): NoteAggregateResult
+	partnerAggregate(filter: PersonFilter): PersonAggregateResult
+	tagAggregate(filter: TagFilter): TagAggregateResult
+	transactionAggregate(filter: TransactionFilter): TransactionAggregateResult
+}
+
+type Comment {
+	id: ID!
+	author(filter: PersonFilter, order: PersonOrder, first: Int, offset: Int): [Person] @hasInverse(field: comment)
+	blogPost(filter: BlogPostFilter, order: BlogPostOrder, first: Int, offset: Int): [BlogPost] @hasInverse(field: comment)
+	body: String @search(by: [fulltext])
+	comment(filter: CommentFilter, order: CommentOrder, first: Int, offset: Int): [Comment] @hasInverse(field: comment)
+	media(filter: MediaFilter, order: MediaOrder, first: Int, offset: Int): [Media] @hasInverse(field: comment)
+	note(filter: NoteFilter, order: NoteOrder, first: Int, offset: Int): [Note] @hasInverse(field: comment)
+	publishDate: DateTime @search
+	published: Boolean
+	tag(filter: TagFilter, order: TagOrder, first: Int, offset: Int): [Tag] @hasInverse(field: comment)
+	authorAggregate(filter: PersonFilter): PersonAggregateResult
+	blogPostAggregate(filter: BlogPostFilter): BlogPostAggregateResult
+	commentAggregate(filter: CommentFilter): CommentAggregateResult
+	mediaAggregate(filter: MediaFilter): MediaAggregateResult
+	noteAggregate(filter: NoteFilter): NoteAggregateResult
+	tagAggregate(filter: TagFilter): TagAggregateResult
+}
+
+type FinancialAccount {
+	id: ID!
+	accountName: String! @search(by: [hash])
+	currentValue: Float @search
+	media(filter: MediaFilter, order: MediaOrder, first: Int, offset: Int): [Media] @hasInverse(field: financialAccount)
+	note(filter: NoteFilter, order: NoteOrder, first: Int, offset: Int): [Note] @hasInverse(field: financialAccount)
+	owner(filter: PersonFilter, order: PersonOrder, first: Int, offset: Int): [Person] @hasInverse(field: financialAccount)
+	tag(filter: TagFilter, order: TagOrder, first: Int, offset: Int): [Tag] @hasInverse(field: financialAccount)
+	transaction(filter: TransactionFilter, order: TransactionOrder, first: Int, offset: Int): [Transaction] @hasInverse(field: financialAccount)
+	mediaAggregate(filter: MediaFilter): MediaAggregateResult
+	noteAggregate(filter: NoteFilter): NoteAggregateResult
+	ownerAggregate(filter: PersonFilter): PersonAggregateResult
+	tagAggregate(filter: TagFilter): TagAggregateResult
+	transactionAggregate(filter: TransactionFilter): TransactionAggregateResult
+}
+
+type Game {
+	id: ID!
+	attempts: Int @search
+	bulls: Int @search
+	cows: Int @search
+	guess: [String]
+	note(filter: NoteFilter, order: NoteOrder, first: Int, offset: Int): [Note] @hasInverse(field: game)
+	player(filter: PersonFilter, order: PersonOrder, first: Int, offset: Int): [Person] @hasInverse(field: game)
+	score: Int @search
+	tag(filter: TagFilter, order: TagOrder, first: Int, offset: Int): [Tag] @hasInverse(field: game)
+	winningWord: String @search(by: [hash])
+	won: Boolean
+	noteAggregate(filter: NoteFilter): NoteAggregateResult
+	playerAggregate(filter: PersonFilter): PersonAggregateResult
+	tagAggregate(filter: TagFilter): TagAggregateResult
+}
+
+type Media {
+	id: ID!
+	activity(filter: ActivityFilter, order: ActivityOrder, first: Int, offset: Int): [Activity] @hasInverse(field: media)
+	affix(filter: AffixFilter, order: AffixOrder, first: Int, offset: Int): [Affix] @hasInverse(field: media)
+	blogPost(filter: BlogPostFilter, order: BlogPostOrder, first: Int, offset: Int): [BlogPost] @hasInverse(field: media)
+	budget(filter: BudgetFilter, order: BudgetOrder, first: Int, offset: Int): [Budget] @hasInverse(field: media)
+	comment(filter: CommentFilter, order: CommentOrder, first: Int, offset: Int): [Comment] @hasInverse(field: media)
+	financialAccount(filter: FinancialAccountFilter, order: FinancialAccountOrder, first: Int, offset: Int): [FinancialAccount] @hasInverse(field: media)
+	link: String
+	note(filter: NoteFilter, order: NoteOrder, first: Int, offset: Int): [Note] @hasInverse(field: media)
+	occurrance: DateTime @search
+	person(filter: PersonFilter, order: PersonOrder, first: Int, offset: Int): [Person] @hasInverse(field: media)
+	tag(filter: TagFilter, order: TagOrder, first: Int, offset: Int): [Tag] @hasInverse(field: media)
+	transaction(filter: TransactionFilter, order: TransactionOrder, first: Int, offset: Int): [Transaction] @hasInverse(field: media)
+	type: MediaType
+	vendor(filter: VendorFilter, order: VendorOrder, first: Int, offset: Int): [Vendor] @hasInverse(field: media)
+	verbo(filter: VerboFilter, order: VerboOrder, first: Int, offset: Int): [Verbo] @hasInverse(field: media)
+	word(filter: WordFilter, order: WordOrder, first: Int, offset: Int): [Word] @hasInverse(field: media)
+	activityAggregate(filter: ActivityFilter): ActivityAggregateResult
+	affixAggregate(filter: AffixFilter): AffixAggregateResult
+	blogPostAggregate(filter: BlogPostFilter): BlogPostAggregateResult
+	budgetAggregate(filter: BudgetFilter): BudgetAggregateResult
+	commentAggregate(filter: CommentFilter): CommentAggregateResult
+	financialAccountAggregate(filter: FinancialAccountFilter): FinancialAccountAggregateResult
+	noteAggregate(filter: NoteFilter): NoteAggregateResult
+	personAggregate(filter: PersonFilter): PersonAggregateResult
+	tagAggregate(filter: TagFilter): TagAggregateResult
+	transactionAggregate(filter: TransactionFilter): TransactionAggregateResult
+	vendorAggregate(filter: VendorFilter): VendorAggregateResult
+	verboAggregate(filter: VerboFilter): VerboAggregateResult
+	wordAggregate(filter: WordFilter): WordAggregateResult
+}
+
+type Note {
+	id: ID!
+	activity(filter: ActivityFilter): Activity @hasInverse(field: note)
+	affix(filter: AffixFilter, order: AffixOrder, first: Int, offset: Int): [Affix] @hasInverse(field: note)
+	blogPost(filter: BlogPostFilter): BlogPost @hasInverse(field: note)
+	budget(filter: BudgetFilter): Budget @hasInverse(field: note)
+	comment(filter: CommentFilter): Comment @hasInverse(field: note)
+	financialAccount(filter: FinancialAccountFilter): FinancialAccount @hasInverse(field: note)
+	game(filter: GameFilter): Game @hasInverse(field: note)
+	media(filter: MediaFilter): Media @hasInverse(field: note)
+	note: String @search(by: [term])
+	person(filter: PersonFilter): Person @hasInverse(field: note)
+	tag(filter: TagFilter): Tag @hasInverse(field: note)
+	transaction(filter: TransactionFilter): Transaction @hasInverse(field: note)
+	vendor(filter: VendorFilter): Vendor @hasInverse(field: note)
+	verbo(filter: VerboFilter): Verbo @hasInverse(field: note)
+	word(filter: WordFilter): Word @hasInverse(field: note)
+	affixAggregate(filter: AffixFilter): AffixAggregateResult
+}
+
+type Person {
+	id: ID!
+	activity(filter: ActivityFilter, order: ActivityOrder, first: Int, offset: Int): [Activity] @hasInverse(field: person)
+	associate(filter: PersonFilter, order: PersonOrder, first: Int, offset: Int): [Person] @hasInverse(field: associate)
+	blogPost(filter: BlogPostFilter, order: BlogPostOrder, first: Int, offset: Int): [BlogPost] @hasInverse(field: author)
+	budget(filter: BudgetFilter, order: BudgetOrder, first: Int, offset: Int): [Budget] @hasInverse(field: partner)
+	comment(filter: CommentFilter, order: CommentOrder, first: Int, offset: Int): [Comment] @hasInverse(field: author)
+	email: String @search(by: [hash])
+	financialAccount(filter: FinancialAccountFilter, order: FinancialAccountOrder, first: Int, offset: Int): [FinancialAccount] @hasInverse(field: owner)
+	game(filter: GameFilter, order: GameOrder, first: Int, offset: Int): [Game] @hasInverse(field: player)
+	guess: [String]
+	isUser: Boolean
+	media(filter: MediaFilter, order: MediaOrder, first: Int, offset: Int): [Media] @hasInverse(field: person)
+	nickname: [String] @search(by: [hash])
+	note(filter: NoteFilter, order: NoteOrder, first: Int, offset: Int): [Note] @hasInverse(field: person)
+	password: String
+	profileImageUrl(filter: MediaFilter): Media
+	role: Int @search
+	tag(filter: TagFilter, order: TagOrder, first: Int, offset: Int): [Tag] @hasInverse(field: person)
+	transaction(filter: TransactionFilter, order: TransactionOrder, first: Int, offset: Int): [Transaction] @hasInverse(field: participant)
+	activityAggregate(filter: ActivityFilter): ActivityAggregateResult
+	associateAggregate(filter: PersonFilter): PersonAggregateResult
+	blogPostAggregate(filter: BlogPostFilter): BlogPostAggregateResult
+	budgetAggregate(filter: BudgetFilter): BudgetAggregateResult
+	commentAggregate(filter: CommentFilter): CommentAggregateResult
+	financialAccountAggregate(filter: FinancialAccountFilter): FinancialAccountAggregateResult
+	gameAggregate(filter: GameFilter): GameAggregateResult
+	mediaAggregate(filter: MediaFilter): MediaAggregateResult
+	noteAggregate(filter: NoteFilter): NoteAggregateResult
+	tagAggregate(filter: TagFilter): TagAggregateResult
+	transactionAggregate(filter: TransactionFilter): TransactionAggregateResult
+}
+
+type Session {
+	id: ID
+	expires: DateTime
+	sessionToken: String @search(by: [hash])
+	user(filter: UserFilter): User @hasInverse(field: "sessions")
+}
+
+type Tag {
+	id: ID!
+	activity(filter: ActivityFilter, order: ActivityOrder, first: Int, offset: Int): [Activity] @hasInverse(field: tag)
+	blogPost(filter: BlogPostFilter, order: BlogPostOrder, first: Int, offset: Int): [BlogPost] @hasInverse(field: tag)
+	budget(filter: BudgetFilter, order: BudgetOrder, first: Int, offset: Int): [Budget] @hasInverse(field: tag)
+	comment(filter: CommentFilter, order: CommentOrder, first: Int, offset: Int): [Comment] @hasInverse(field: tag)
+	financialAccount(filter: FinancialAccountFilter, order: FinancialAccountOrder, first: Int, offset: Int): [FinancialAccount] @hasInverse(field: tag)
+	game(filter: GameFilter, order: GameOrder, first: Int, offset: Int): [Game] @hasInverse(field: tag)
+	media(filter: MediaFilter, order: MediaOrder, first: Int, offset: Int): [Media] @hasInverse(field: tag)
+	note(filter: NoteFilter, order: NoteOrder, first: Int, offset: Int): [Note] @hasInverse(field: tag)
+	person(filter: PersonFilter, order: PersonOrder, first: Int, offset: Int): [Person] @hasInverse(field: tag)
+	tagName: String @search(by: [hash])
+	transaction(filter: TransactionFilter, order: TransactionOrder, first: Int, offset: Int): [Transaction] @hasInverse(field: tag)
+	vendor(filter: VendorFilter, order: VendorOrder, first: Int, offset: Int): [Vendor] @hasInverse(field: tag)
+	activityAggregate(filter: ActivityFilter): ActivityAggregateResult
+	blogPostAggregate(filter: BlogPostFilter): BlogPostAggregateResult
+	budgetAggregate(filter: BudgetFilter): BudgetAggregateResult
+	commentAggregate(filter: CommentFilter): CommentAggregateResult
+	financialAccountAggregate(filter: FinancialAccountFilter): FinancialAccountAggregateResult
+	gameAggregate(filter: GameFilter): GameAggregateResult
+	mediaAggregate(filter: MediaFilter): MediaAggregateResult
+	noteAggregate(filter: NoteFilter): NoteAggregateResult
+	personAggregate(filter: PersonFilter): PersonAggregateResult
+	transactionAggregate(filter: TransactionFilter): TransactionAggregateResult
+	vendorAggregate(filter: VendorFilter): VendorAggregateResult
+}
+
+type Transaction {
+	id: ID!
+	budget(filter: BudgetFilter, order: BudgetOrder, first: Int, offset: Int): [Budget] @hasInverse(field: transaction)
+	currency: AllowedCurrency @search(by: [hash])
+	financialAccount(filter: FinancialAccountFilter, order: FinancialAccountOrder, first: Int, offset: Int): [FinancialAccount] @hasInverse(field: transaction)
+	media(filter: MediaFilter, order: MediaOrder, first: Int, offset: Int): [Media] @hasInverse(field: transaction)
+	note(filter: NoteFilter, order: NoteOrder, first: Int, offset: Int): [Note] @hasInverse(field: transaction)
+	occurrence: DateTime @search
+	participant(filter: PersonFilter, order: PersonOrder, first: Int, offset: Int): [Person] @hasInverse(field: transaction)
+	tag(filter: TagFilter, order: TagOrder, first: Int, offset: Int): [Tag] @hasInverse(field: transaction)
+	transactionEvent: String @search(by: [hash])
+	budgetAggregate(filter: BudgetFilter): BudgetAggregateResult
+	financialAccountAggregate(filter: FinancialAccountFilter): FinancialAccountAggregateResult
+	mediaAggregate(filter: MediaFilter): MediaAggregateResult
+	noteAggregate(filter: NoteFilter): NoteAggregateResult
+	participantAggregate(filter: PersonFilter): PersonAggregateResult
+	tagAggregate(filter: TagFilter): TagAggregateResult
+}
+
+type Vendor {
+	id: ID!
+	media(filter: MediaFilter, order: MediaOrder, first: Int, offset: Int): [Media] @hasInverse(field: vendor)
+	note(filter: NoteFilter, order: NoteOrder, first: Int, offset: Int): [Note] @hasInverse(field: vendor)
+	tag(filter: TagFilter, order: TagOrder, first: Int, offset: Int): [Tag] @hasInverse(field: vendor)
+	vendorName: String @search(by: [hash])
+	mediaAggregate(filter: MediaFilter): MediaAggregateResult
+	noteAggregate(filter: NoteFilter): NoteAggregateResult
+	tagAggregate(filter: TagFilter): TagAggregateResult
+}
+
+type Verbo {
+	id: ID!
+	cambiar_de_irregular: String @search(by: [hash])
+	categoria_de_irregular: String @search(by: [hash])
+	english: String @search(by: [hash])
+	spanish: String @search(by: [hash])
+	grupo: Float @search
+	irregular: Boolean
+	reflexive: Boolean
+	media(filter: MediaFilter, order: MediaOrder, first: Int, offset: Int): [Media] @hasInverse(field: verbo)
+	note(filter: NoteFilter, order: NoteOrder, first: Int, offset: Int): [Note] @hasInverse(field: verbo)
+	terminacion: AllowedTerminacion @search(by: [exact])
+	mediaAggregate(filter: MediaFilter): MediaAggregateResult
+	noteAggregate(filter: NoteFilter): NoteAggregateResult
+}
+
+type User {
+	id: ID
+	name: String
+	email: String @search(by: [hash])
+	emailVerified: DateTime
+	image: String
+	accounts(filter: AccountFilter, order: AccountOrder, first: Int, offset: Int): [Account] @hasInverse(field: "user")
+	sessions(filter: SessionFilter, order: SessionOrder, first: Int, offset: Int): [Session] @hasInverse(field: "user")
+	accountsAggregate(filter: AccountFilter): AccountAggregateResult
+	sessionsAggregate(filter: SessionFilter): SessionAggregateResult
+}
+
+type VerificationToken {
+	id: ID
+	identifier: String @search(by: [hash])
+	token: String @search(by: [hash])
+	expires: DateTime
+}
+
+type Word {
+	id: ID!
+	definition: String @search(by: [fulltext])
+	f_points: Int @search
+	s_points: Int @search
+	in_game: Boolean
+	isFourLetterWord: Boolean
+	media(filter: MediaFilter, order: MediaOrder, first: Int, offset: Int): [Media] @hasInverse(field: word)
+	note(filter: NoteFilter, order: NoteOrder, first: Int, offset: Int): [Note] @hasInverse(field: word)
+	tier: Int @search
+	tongue: String @search(by: [hash])
+	word: String @search(by: [hash])
+	mediaAggregate(filter: MediaFilter): MediaAggregateResult
+	noteAggregate(filter: NoteFilter): NoteAggregateResult
+}
+
+#######################
+# Extended Definitions
+#######################
+
+"""
+The Int64 scalar type represents a signed 64‐bit numeric non‐fractional value.
+Int64 can represent values in range [-(2^63),(2^63 - 1)].
+"""
+scalar Int64
+
+"""
+The DateTime scalar type represents date and time as a string in RFC3339 format.
+For example: "1985-04-12T23:20:50.52Z" represents 20 mins 50.52 secs after the 23rd hour of Apr 12th 1985 in UTC.
+"""
+scalar DateTime
+
+input IntRange{
+	min: Int!
+	max: Int!
+}
+
+input FloatRange{
+	min: Float!
+	max: Float!
+}
+
+input Int64Range{
+	min: Int64!
+	max: Int64!
+}
+
+input DateTimeRange{
+	min: DateTime!
+	max: DateTime!
+}
+
+input StringRange{
+	min: String!
+	max: String!
+}
+
+enum DgraphIndex {
+	int
+	int64
+	float
+	bool
+	hash
+	exact
+	term
+	fulltext
+	trigram
+	regexp
+	year
+	month
+	day
+	hour
+	geo
+	hnsw
+}
+
+input AuthRule {
+	and: [AuthRule]
+	or: [AuthRule]
+	not: AuthRule
+	rule: String
+}
+
+enum HTTPMethod {
+	GET
+	POST
+	PUT
+	PATCH
+	DELETE
+}
+
+enum Mode {
+	BATCH
+	SINGLE
+}
+
+input CustomHTTP {
+	url: String!
+	method: HTTPMethod!
+	body: String
+	graphql: String
+	mode: Mode
+	forwardHeaders: [String!]
+	secretHeaders: [String!]
+	introspectionHeaders: [String!]
+	skipIntrospection: Boolean
+}
+
+input DgraphDefault {
+	value: String
+}
+
+type Point {
+	longitude: Float!
+	latitude: Float!
+}
+
+input PointRef {
+	longitude: Float!
+	latitude: Float!
+}
+
+input NearFilter {
+	distance: Float!
+	coordinate: PointRef!
+}
+
+input PointGeoFilter {
+	near: NearFilter
+	within: WithinFilter
+}
+
+type PointList {
+	points: [Point!]!
+}
+
+input PointListRef {
+	points: [PointRef!]!
+}
+
+type Polygon {
+	coordinates: [PointList!]!
+}
+
+input PolygonRef {
+	coordinates: [PointListRef!]!
+}
+
+type MultiPolygon {
+	polygons: [Polygon!]!
+}
+
+input MultiPolygonRef {
+	polygons: [PolygonRef!]!
+}
+
+input WithinFilter {
+	polygon: PolygonRef!
+}
+
+input ContainsFilter {
+	point: PointRef
+	polygon: PolygonRef
+}
+
+input IntersectsFilter {
+	polygon: PolygonRef
+	multiPolygon: MultiPolygonRef
+}
+
+input PolygonGeoFilter {
+	near: NearFilter
+	within: WithinFilter
+	contains: ContainsFilter
+	intersects: IntersectsFilter
+}
+
+input GenerateQueryParams {
+	get: Boolean
+	query: Boolean
+	password: Boolean
+	aggregate: Boolean
+}
+
+input GenerateMutationParams {
+	add: Boolean
+	update: Boolean
+	delete: Boolean
+}
+
+directive @hasInverse(field: String!) on FIELD_DEFINITION
+directive @search(by: [String!]) on FIELD_DEFINITION
+directive @embedding on FIELD_DEFINITION
+directive @dgraph(type: String, pred: String) on OBJECT | INTERFACE | FIELD_DEFINITION
+directive @id(interface: Boolean) on FIELD_DEFINITION
+directive @default(add: DgraphDefault, update: DgraphDefault) on FIELD_DEFINITION
+directive @withSubscription on OBJECT | INTERFACE | FIELD_DEFINITION
+directive @secret(field: String!, pred: String) on OBJECT | INTERFACE
+directive @auth(
+	password: AuthRule
+	query: AuthRule,
+	add: AuthRule,
+	update: AuthRule,
+	delete: AuthRule) on OBJECT | INTERFACE
+directive @custom(http: CustomHTTP, dql: String) on FIELD_DEFINITION
+directive @remote on OBJECT | INTERFACE | UNION | INPUT_OBJECT | ENUM
+directive @remoteResponse(name: String) on FIELD_DEFINITION
+directive @cascade(fields: [String]) on FIELD
+directive @lambda on FIELD_DEFINITION
+directive @lambdaOnMutate(add: Boolean, update: Boolean, delete: Boolean) on OBJECT | INTERFACE
+directive @cacheControl(maxAge: Int!) on QUERY
+directive @generate(
+	query: GenerateQueryParams,
+	mutation: GenerateMutationParams,
+	subscription: Boolean) on OBJECT | INTERFACE
+
+input IntFilter {
+	eq: Int
+	in: [Int]
+	le: Int
+	lt: Int
+	ge: Int
+	gt: Int
+	between: IntRange
+}
+
+input Int64Filter {
+	eq: Int64
+	in: [Int64]
+	le: Int64
+	lt: Int64
+	ge: Int64
+	gt: Int64
+	between: Int64Range
+}
+
+input FloatFilter {
+	eq: Float
+	in: [Float]
+	le: Float
+	lt: Float
+	ge: Float
+	gt: Float
+	between: FloatRange
+}
+
+input DateTimeFilter {
+	eq: DateTime
+	in: [DateTime]
+	le: DateTime
+	lt: DateTime
+	ge: DateTime
+	gt: DateTime
+	between: DateTimeRange
+}
+
+input StringTermFilter {
+	allofterms: String
+	anyofterms: String
+}
+
+input StringRegExpFilter {
+	regexp: String
+}
+
+input StringFullTextFilter {
+	alloftext: String
+	anyoftext: String
+}
+
+input StringExactFilter {
+	eq: String
+	in: [String]
+	le: String
+	lt: String
+	ge: String
+	gt: String
+	between: StringRange
+}
+
+input StringHashFilter {
+	eq: String
+	in: [String]
+}
+
+#######################
+# Generated Types
+#######################
+
+type AccountAggregateResult {
+	count: Int
+	typeMin: String
+	typeMax: String
+	providerMin: String
+	providerMax: String
+	providerAccountIdMin: String
+	providerAccountIdMax: String
+	refreshTokenMin: String
+	refreshTokenMax: String
+	expires_atMin: Int64
+	expires_atMax: Int64
+	expires_atSum: Int64
+	expires_atAvg: Float
+	accessTokenMin: String
+	accessTokenMax: String
+	token_typeMin: String
+	token_typeMax: String
+	refresh_tokenMin: String
+	refresh_tokenMax: String
+	access_tokenMin: String
+	access_tokenMax: String
+	scopeMin: String
+	scopeMax: String
+	id_tokenMin: String
+	id_tokenMax: String
+	session_stateMin: String
+	session_stateMax: String
+}
+
+type ActivityAggregateResult {
+	count: Int
+	endTimeMin: DateTime
+	endTimeMax: DateTime
+	startTimeMin: DateTime
+	startTimeMax: DateTime
+	nameMin: String
+	nameMax: String
+}
+
+type AddAccountPayload {
+	account(filter: AccountFilter, order: AccountOrder, first: Int, offset: Int): [Account]
+	numUids: Int
+}
+
+type AddActivityPayload {
+	activity(filter: ActivityFilter, order: ActivityOrder, first: Int, offset: Int): [Activity]
+	numUids: Int
+}
+
+type AddAffixPayload {
+	affix(filter: AffixFilter, order: AffixOrder, first: Int, offset: Int): [Affix]
+	numUids: Int
+}
+
+type AddBlogPostPayload {
+	blogPost(filter: BlogPostFilter, order: BlogPostOrder, first: Int, offset: Int): [BlogPost]
+	numUids: Int
+}
+
+type AddBudgetPayload {
+	budget(filter: BudgetFilter, order: BudgetOrder, first: Int, offset: Int): [Budget]
+	numUids: Int
+}
+
+type AddCommentPayload {
+	comment(filter: CommentFilter, order: CommentOrder, first: Int, offset: Int): [Comment]
+	numUids: Int
+}
+
+type AddFinancialAccountPayload {
+	financialAccount(filter: FinancialAccountFilter, order: FinancialAccountOrder, first: Int, offset: Int): [FinancialAccount]
+	numUids: Int
+}
+
+type AddGamePayload {
+	game(filter: GameFilter, order: GameOrder, first: Int, offset: Int): [Game]
+	numUids: Int
+}
+
+type AddMediaPayload {
+	media(filter: MediaFilter, order: MediaOrder, first: Int, offset: Int): [Media]
+	numUids: Int
+}
+
+type AddNotePayload {
+	note(filter: NoteFilter, order: NoteOrder, first: Int, offset: Int): [Note]
+	numUids: Int
+}
+
+type AddPersonPayload {
+	person(filter: PersonFilter, order: PersonOrder, first: Int, offset: Int): [Person]
+	numUids: Int
+}
+
+type AddSessionPayload {
+	session(filter: SessionFilter, order: SessionOrder, first: Int, offset: Int): [Session]
+	numUids: Int
+}
+
+type AddTagPayload {
+	tag(filter: TagFilter, order: TagOrder, first: Int, offset: Int): [Tag]
+	numUids: Int
+}
+
+type AddTransactionPayload {
+	transaction(filter: TransactionFilter, order: TransactionOrder, first: Int, offset: Int): [Transaction]
+	numUids: Int
+}
+
+type AddUserPayload {
+	user(filter: UserFilter, order: UserOrder, first: Int, offset: Int): [User]
+	numUids: Int
+}
+
+type AddVendorPayload {
+	vendor(filter: VendorFilter, order: VendorOrder, first: Int, offset: Int): [Vendor]
+	numUids: Int
+}
+
+type AddVerboPayload {
+	verbo(filter: VerboFilter, order: VerboOrder, first: Int, offset: Int): [Verbo]
+	numUids: Int
+}
+
+type AddVerificationTokenPayload {
+	verificationToken(filter: VerificationTokenFilter, order: VerificationTokenOrder, first: Int, offset: Int): [VerificationToken]
+	numUids: Int
+}
+
+type AddWordPayload {
+	word(filter: WordFilter, order: WordOrder, first: Int, offset: Int): [Word]
+	numUids: Int
+}
+
+type AffixAggregateResult {
+	count: Int
+	morphemeMin: String
+	morphemeMax: String
+}
+
+type BlogPostAggregateResult {
+	count: Int
+	bodyMin: String
+	bodyMax: String
+	publishDateMin: DateTime
+	publishDateMax: DateTime
+	titleMin: String
+	titleMax: String
+}
+
+type BudgetAggregateResult {
+	count: Int
+	budgetNameMin: String
+	budgetNameMax: String
+	budgetValueMin: Float
+	budgetValueMax: Float
+	budgetValueSum: Float
+	budgetValueAvg: Float
+}
+
+type CommentAggregateResult {
+	count: Int
+	bodyMin: String
+	bodyMax: String
+	publishDateMin: DateTime
+	publishDateMax: DateTime
+}
+
+type DeleteAccountPayload {
+	account(filter: AccountFilter, order: AccountOrder, first: Int, offset: Int): [Account]
+	msg: String
+	numUids: Int
+}
+
+type DeleteActivityPayload {
+	activity(filter: ActivityFilter, order: ActivityOrder, first: Int, offset: Int): [Activity]
+	msg: String
+	numUids: Int
+}
+
+type DeleteAffixPayload {
+	affix(filter: AffixFilter, order: AffixOrder, first: Int, offset: Int): [Affix]
+	msg: String
+	numUids: Int
+}
+
+type DeleteBlogPostPayload {
+	blogPost(filter: BlogPostFilter, order: BlogPostOrder, first: Int, offset: Int): [BlogPost]
+	msg: String
+	numUids: Int
+}
+
+type DeleteBudgetPayload {
+	budget(filter: BudgetFilter, order: BudgetOrder, first: Int, offset: Int): [Budget]
+	msg: String
+	numUids: Int
+}
+
+type DeleteCommentPayload {
+	comment(filter: CommentFilter, order: CommentOrder, first: Int, offset: Int): [Comment]
+	msg: String
+	numUids: Int
+}
+
+type DeleteFinancialAccountPayload {
+	financialAccount(filter: FinancialAccountFilter, order: FinancialAccountOrder, first: Int, offset: Int): [FinancialAccount]
+	msg: String
+	numUids: Int
+}
+
+type DeleteGamePayload {
+	game(filter: GameFilter, order: GameOrder, first: Int, offset: Int): [Game]
+	msg: String
+	numUids: Int
+}
+
+type DeleteMediaPayload {
+	media(filter: MediaFilter, order: MediaOrder, first: Int, offset: Int): [Media]
+	msg: String
+	numUids: Int
+}
+
+type DeleteNotePayload {
+	note(filter: NoteFilter, order: NoteOrder, first: Int, offset: Int): [Note]
+	msg: String
+	numUids: Int
+}
+
+type DeletePersonPayload {
+	person(filter: PersonFilter, order: PersonOrder, first: Int, offset: Int): [Person]
+	msg: String
+	numUids: Int
+}
+
+type DeleteSessionPayload {
+	session(filter: SessionFilter, order: SessionOrder, first: Int, offset: Int): [Session]
+	msg: String
+	numUids: Int
+}
+
+type DeleteTagPayload {
+	tag(filter: TagFilter, order: TagOrder, first: Int, offset: Int): [Tag]
+	msg: String
+	numUids: Int
+}
+
+type DeleteTransactionPayload {
+	transaction(filter: TransactionFilter, order: TransactionOrder, first: Int, offset: Int): [Transaction]
+	msg: String
+	numUids: Int
+}
+
+type DeleteUserPayload {
+	user(filter: UserFilter, order: UserOrder, first: Int, offset: Int): [User]
+	msg: String
+	numUids: Int
+}
+
+type DeleteVendorPayload {
+	vendor(filter: VendorFilter, order: VendorOrder, first: Int, offset: Int): [Vendor]
+	msg: String
+	numUids: Int
+}
+
+type DeleteVerboPayload {
+	verbo(filter: VerboFilter, order: VerboOrder, first: Int, offset: Int): [Verbo]
+	msg: String
+	numUids: Int
+}
+
+type DeleteVerificationTokenPayload {
+	verificationToken(filter: VerificationTokenFilter, order: VerificationTokenOrder, first: Int, offset: Int): [VerificationToken]
+	msg: String
+	numUids: Int
+}
+
+type DeleteWordPayload {
+	word(filter: WordFilter, order: WordOrder, first: Int, offset: Int): [Word]
+	msg: String
+	numUids: Int
+}
+
+type FinancialAccountAggregateResult {
+	count: Int
+	accountNameMin: String
+	accountNameMax: String
+	currentValueMin: Float
+	currentValueMax: Float
+	currentValueSum: Float
+	currentValueAvg: Float
+}
+
+type GameAggregateResult {
+	count: Int
+	attemptsMin: Int
+	attemptsMax: Int
+	attemptsSum: Int
+	attemptsAvg: Float
+	bullsMin: Int
+	bullsMax: Int
+	bullsSum: Int
+	bullsAvg: Float
+	cowsMin: Int
+	cowsMax: Int
+	cowsSum: Int
+	cowsAvg: Float
+	scoreMin: Int
+	scoreMax: Int
+	scoreSum: Int
+	scoreAvg: Float
+	winningWordMin: String
+	winningWordMax: String
+}
+
+type MediaAggregateResult {
+	count: Int
+	linkMin: String
+	linkMax: String
+	occurranceMin: DateTime
+	occurranceMax: DateTime
+}
+
+type NoteAggregateResult {
+	count: Int
+	noteMin: String
+	noteMax: String
+}
+
+type PersonAggregateResult {
+	count: Int
+	emailMin: String
+	emailMax: String
+	passwordMin: String
+	passwordMax: String
+	roleMin: Int
+	roleMax: Int
+	roleSum: Int
+	roleAvg: Float
+}
+
+type SessionAggregateResult {
+	count: Int
+	expiresMin: DateTime
+	expiresMax: DateTime
+	sessionTokenMin: String
+	sessionTokenMax: String
+}
+
+type TagAggregateResult {
+	count: Int
+	tagNameMin: String
+	tagNameMax: String
+}
+
+type TransactionAggregateResult {
+	count: Int
+	occurrenceMin: DateTime
+	occurrenceMax: DateTime
+	transactionEventMin: String
+	transactionEventMax: String
+}
+
+type UpdateAccountPayload {
+	account(filter: AccountFilter, order: AccountOrder, first: Int, offset: Int): [Account]
+	numUids: Int
+}
+
+type UpdateActivityPayload {
+	activity(filter: ActivityFilter, order: ActivityOrder, first: Int, offset: Int): [Activity]
+	numUids: Int
+}
+
+type UpdateAffixPayload {
+	affix(filter: AffixFilter, order: AffixOrder, first: Int, offset: Int): [Affix]
+	numUids: Int
+}
+
+type UpdateBlogPostPayload {
+	blogPost(filter: BlogPostFilter, order: BlogPostOrder, first: Int, offset: Int): [BlogPost]
+	numUids: Int
+}
+
+type UpdateBudgetPayload {
+	budget(filter: BudgetFilter, order: BudgetOrder, first: Int, offset: Int): [Budget]
+	numUids: Int
+}
+
+type UpdateCommentPayload {
+	comment(filter: CommentFilter, order: CommentOrder, first: Int, offset: Int): [Comment]
+	numUids: Int
+}
+
+type UpdateFinancialAccountPayload {
+	financialAccount(filter: FinancialAccountFilter, order: FinancialAccountOrder, first: Int, offset: Int): [FinancialAccount]
+	numUids: Int
+}
+
+type UpdateGamePayload {
+	game(filter: GameFilter, order: GameOrder, first: Int, offset: Int): [Game]
+	numUids: Int
+}
+
+type UpdateMediaPayload {
+	media(filter: MediaFilter, order: MediaOrder, first: Int, offset: Int): [Media]
+	numUids: Int
+}
+
+type UpdateNotePayload {
+	note(filter: NoteFilter, order: NoteOrder, first: Int, offset: Int): [Note]
+	numUids: Int
+}
+
+type UpdatePersonPayload {
+	person(filter: PersonFilter, order: PersonOrder, first: Int, offset: Int): [Person]
+	numUids: Int
+}
+
+type UpdateSessionPayload {
+	session(filter: SessionFilter, order: SessionOrder, first: Int, offset: Int): [Session]
+	numUids: Int
+}
+
+type UpdateTagPayload {
+	tag(filter: TagFilter, order: TagOrder, first: Int, offset: Int): [Tag]
+	numUids: Int
+}
+
+type UpdateTransactionPayload {
+	transaction(filter: TransactionFilter, order: TransactionOrder, first: Int, offset: Int): [Transaction]
+	numUids: Int
+}
+
+type UpdateUserPayload {
+	user(filter: UserFilter, order: UserOrder, first: Int, offset: Int): [User]
+	numUids: Int
+}
+
+type UpdateVendorPayload {
+	vendor(filter: VendorFilter, order: VendorOrder, first: Int, offset: Int): [Vendor]
+	numUids: Int
+}
+
+type UpdateVerboPayload {
+	verbo(filter: VerboFilter, order: VerboOrder, first: Int, offset: Int): [Verbo]
+	numUids: Int
+}
+
+type UpdateVerificationTokenPayload {
+	verificationToken(filter: VerificationTokenFilter, order: VerificationTokenOrder, first: Int, offset: Int): [VerificationToken]
+	numUids: Int
+}
+
+type UpdateWordPayload {
+	word(filter: WordFilter, order: WordOrder, first: Int, offset: Int): [Word]
+	numUids: Int
+}
+
+type UserAggregateResult {
+	count: Int
+	nameMin: String
+	nameMax: String
+	emailMin: String
+	emailMax: String
+	emailVerifiedMin: DateTime
+	emailVerifiedMax: DateTime
+	imageMin: String
+	imageMax: String
+}
+
+type VendorAggregateResult {
+	count: Int
+	vendorNameMin: String
+	vendorNameMax: String
+}
+
+type VerboAggregateResult {
+	count: Int
+	cambiar_de_irregularMin: String
+	cambiar_de_irregularMax: String
+	categoria_de_irregularMin: String
+	categoria_de_irregularMax: String
+	englishMin: String
+	englishMax: String
+	spanishMin: String
+	spanishMax: String
+	grupoMin: Float
+	grupoMax: Float
+	grupoSum: Float
+	grupoAvg: Float
+}
+
+type VerificationTokenAggregateResult {
+	count: Int
+	identifierMin: String
+	identifierMax: String
+	tokenMin: String
+	tokenMax: String
+	expiresMin: DateTime
+	expiresMax: DateTime
+}
+
+type WordAggregateResult {
+	count: Int
+	definitionMin: String
+	definitionMax: String
+	f_pointsMin: Int
+	f_pointsMax: Int
+	f_pointsSum: Int
+	f_pointsAvg: Float
+	s_pointsMin: Int
+	s_pointsMax: Int
+	s_pointsSum: Int
+	s_pointsAvg: Float
+	tierMin: Int
+	tierMax: Int
+	tierSum: Int
+	tierAvg: Float
+	tongueMin: String
+	tongueMax: String
+	wordMin: String
+	wordMax: String
+}
+
+#######################
+# Generated Enums
+#######################
+
+enum AccountHasFilter {
+	type
+	provider
+	providerAccountId
+	refreshToken
+	expires_at
+	accessToken
+	token_type
+	refresh_token
+	access_token
+	scope
+	id_token
+	session_state
+	user
+}
+
+enum AccountOrderable {
+	type
+	provider
+	providerAccountId
+	refreshToken
+	expires_at
+	accessToken
+	token_type
+	refresh_token
+	access_token
+	scope
+	id_token
+	session_state
+}
+
+enum ActivityHasFilter {
+	endTime
+	startTime
+	media
+	name
+	note
+	person
+	tag
+}
+
+enum ActivityOrderable {
+	endTime
+	startTime
+	name
+}
+
+enum AffixHasFilter {
+	example
+	meaning
+	media
+	morpheme
+	note
+	tongue
+	type
+}
+
+enum AffixOrderable {
+	morpheme
+}
+
+enum BlogPostHasFilter {
+	author
+	body
+	comment
+	media
+	note
+	publishDate
+	published
+	tag
+	title
+}
+
+enum BlogPostOrderable {
+	body
+	publishDate
+	title
+}
+
+enum BudgetHasFilter {
+	budgetName
+	budgetValue
+	media
+	note
+	partner
+	tag
+	transaction
+}
+
+enum BudgetOrderable {
+	budgetName
+	budgetValue
+}
+
+enum CommentHasFilter {
+	author
+	blogPost
+	body
+	comment
+	media
+	note
+	publishDate
+	published
+	tag
+}
+
+enum CommentOrderable {
+	body
+	publishDate
+}
+
+enum FinancialAccountHasFilter {
+	accountName
+	currentValue
+	media
+	note
+	owner
+	tag
+	transaction
+}
+
+enum FinancialAccountOrderable {
+	accountName
+	currentValue
+}
+
+enum GameHasFilter {
+	attempts
+	bulls
+	cows
+	guess
+	note
+	player
+	score
+	tag
+	winningWord
+	won
+}
+
+enum GameOrderable {
+	attempts
+	bulls
+	cows
+	score
+	winningWord
+}
+
+enum MediaHasFilter {
+	activity
+	affix
+	blogPost
+	budget
+	comment
+	financialAccount
+	link
+	note
+	occurrance
+	person
+	tag
+	transaction
+	type
+	vendor
+	verbo
+	word
+}
+
+enum MediaOrderable {
+	link
+	occurrance
+}
+
+enum NoteHasFilter {
+	activity
+	affix
+	blogPost
+	budget
+	comment
+	financialAccount
+	game
+	media
+	note
+	person
+	tag
+	transaction
+	vendor
+	verbo
+	word
+}
+
+enum NoteOrderable {
+	note
+}
+
+enum PersonHasFilter {
+	activity
+	associate
+	blogPost
+	budget
+	comment
+	email
+	financialAccount
+	game
+	guess
+	isUser
+	media
+	nickname
+	note
+	password
+	profileImageUrl
+	role
+	tag
+	transaction
+}
+
+enum PersonOrderable {
+	email
+	password
+	role
+}
+
+enum SessionHasFilter {
+	expires
+	sessionToken
+	user
+}
+
+enum SessionOrderable {
+	expires
+	sessionToken
+}
+
+enum TagHasFilter {
+	activity
+	blogPost
+	budget
+	comment
+	financialAccount
+	game
+	media
+	note
+	person
+	tagName
+	transaction
+	vendor
+}
+
+enum TagOrderable {
+	tagName
+}
+
+enum TransactionHasFilter {
+	budget
+	currency
+	financialAccount
+	media
+	note
+	occurrence
+	participant
+	tag
+	transactionEvent
+}
+
+enum TransactionOrderable {
+	occurrence
+	transactionEvent
+}
+
+enum UserHasFilter {
+	name
+	email
+	emailVerified
+	image
+	accounts
+	sessions
+}
+
+enum UserOrderable {
+	name
+	email
+	emailVerified
+	image
+}
+
+enum VendorHasFilter {
+	media
+	note
+	tag
+	vendorName
+}
+
+enum VendorOrderable {
+	vendorName
+}
+
+enum VerboHasFilter {
+	cambiar_de_irregular
+	categoria_de_irregular
+	english
+	spanish
+	grupo
+	irregular
+	reflexive
+	media
+	note
+	terminacion
+}
+
+enum VerboOrderable {
+	cambiar_de_irregular
+	categoria_de_irregular
+	english
+	spanish
+	grupo
+}
+
+enum VerificationTokenHasFilter {
+	identifier
+	token
+	expires
+}
+
+enum VerificationTokenOrderable {
+	identifier
+	token
+	expires
+}
+
+enum WordHasFilter {
+	definition
+	f_points
+	s_points
+	in_game
+	isFourLetterWord
+	media
+	note
+	tier
+	tongue
+	word
+}
+
+enum WordOrderable {
+	definition
+	f_points
+	s_points
+	tier
+	tongue
+	word
+}
+
+#######################
+# Generated Inputs
+#######################
+
+input AccountFilter {
+	id: [ID!]
+	provider: StringHashFilter
+	providerAccountId: StringHashFilter
+	has: [AccountHasFilter]
+	and: [AccountFilter]
+	or: [AccountFilter]
+	not: AccountFilter
+}
+
+input AccountOrder {
+	asc: AccountOrderable
+	desc: AccountOrderable
+	then: AccountOrder
+}
+
+input AccountPatch {
+	type: String
+	provider: String
+	providerAccountId: String
+	refreshToken: String
+	expires_at: Int64
+	accessToken: String
+	token_type: String
+	refresh_token: String
+	access_token: String
+	scope: String
+	id_token: String
+	session_state: String
+	user: UserRef
+}
+
+input AccountRef {
+	id: ID
+	type: String
+	provider: String
+	providerAccountId: String
+	refreshToken: String
+	expires_at: Int64
+	accessToken: String
+	token_type: String
+	refresh_token: String
+	access_token: String
+	scope: String
+	id_token: String
+	session_state: String
+	user: UserRef
+}
+
+input ActivityFilter {
+	id: [ID!]
+	endTime: DateTimeFilter
+	startTime: DateTimeFilter
+	name: StringHashFilter
+	has: [ActivityHasFilter]
+	and: [ActivityFilter]
+	or: [ActivityFilter]
+	not: ActivityFilter
+}
+
+input ActivityOrder {
+	asc: ActivityOrderable
+	desc: ActivityOrderable
+	then: ActivityOrder
+}
+
+input ActivityPatch {
+	endTime: DateTime
+	startTime: DateTime
+	media: [MediaRef]
+	name: String
+	note: [NoteRef]
+	person: [PersonRef]
+	tag: [TagRef]
+}
+
+input ActivityRef {
+	id: ID
+	endTime: DateTime
+	startTime: DateTime
+	media: [MediaRef]
+	name: String
+	note: [NoteRef]
+	person: [PersonRef]
+	tag: [TagRef]
+}
+
+input AddAccountInput {
+	type: String
+	provider: String
+	providerAccountId: String
+	refreshToken: String
+	expires_at: Int64
+	accessToken: String
+	token_type: String
+	refresh_token: String
+	access_token: String
+	scope: String
+	id_token: String
+	session_state: String
+	user: UserRef
+}
+
+input AddActivityInput {
+	endTime: DateTime
+	startTime: DateTime
+	media: [MediaRef]
+	name: String
+	note: [NoteRef]
+	person: [PersonRef]
+	tag: [TagRef]
+}
+
+input AddAffixInput {
+	example: [String]
+	meaning: [String]
+	media: [MediaRef]
+	morpheme: String
+	note: [NoteRef]
+	tongue: AllowedTongue
+	type: [AllowedTypeAffix]
+}
+
+input AddBlogPostInput {
+	author: [PersonRef]
+	body: String
+	comment: [CommentRef]
+	media: [MediaRef]
+	note: [NoteRef]
+	publishDate: DateTime
+	published: Boolean
+	tag: [TagRef]
+	title: String!
+}
+
+input AddBudgetInput {
+	budgetName: String!
+	budgetValue: Float
+	media: [MediaRef]
+	note: [NoteRef]
+	partner: [PersonRef]
+	tag: [TagRef]
+	transaction: [TransactionRef]
+}
+
+input AddCommentInput {
+	author: [PersonRef]
+	blogPost: [BlogPostRef]
+	body: String
+	comment: [CommentRef]
+	media: [MediaRef]
+	note: [NoteRef]
+	publishDate: DateTime
+	published: Boolean
+	tag: [TagRef]
+}
+
+input AddFinancialAccountInput {
+	accountName: String!
+	currentValue: Float
+	media: [MediaRef]
+	note: [NoteRef]
+	owner: [PersonRef]
+	tag: [TagRef]
+	transaction: [TransactionRef]
+}
+
+input AddGameInput {
+	attempts: Int
+	bulls: Int
+	cows: Int
+	guess: [String]
+	note: [NoteRef]
+	player: [PersonRef]
+	score: Int
+	tag: [TagRef]
+	winningWord: String
+	won: Boolean
+}
+
+input AddMediaInput {
+	activity: [ActivityRef]
+	affix: [AffixRef]
+	blogPost: [BlogPostRef]
+	budget: [BudgetRef]
+	comment: [CommentRef]
+	financialAccount: [FinancialAccountRef]
+	link: String
+	note: [NoteRef]
+	occurrance: DateTime
+	person: [PersonRef]
+	tag: [TagRef]
+	transaction: [TransactionRef]
+	type: MediaType
+	vendor: [VendorRef]
+	verbo: [VerboRef]
+	word: [WordRef]
+}
+
+input AddNoteInput {
+	activity: ActivityRef
+	affix: [AffixRef]
+	blogPost: BlogPostRef
+	budget: BudgetRef
+	comment: CommentRef
+	financialAccount: FinancialAccountRef
+	game: GameRef
+	media: MediaRef
+	note: String
+	person: PersonRef
+	tag: TagRef
+	transaction: TransactionRef
+	vendor: VendorRef
+	verbo: VerboRef
+	word: WordRef
+}
+
+input AddPersonInput {
+	activity: [ActivityRef]
+	associate: [PersonRef]
+	blogPost: [BlogPostRef]
+	budget: [BudgetRef]
+	comment: [CommentRef]
+	email: String
+	financialAccount: [FinancialAccountRef]
+	game: [GameRef]
+	guess: [String]
+	isUser: Boolean
+	media: [MediaRef]
+	nickname: [String]
+	note: [NoteRef]
+	password: String
+	profileImageUrl: MediaRef
+	role: Int
+	tag: [TagRef]
+	transaction: [TransactionRef]
+}
+
+input AddSessionInput {
+	expires: DateTime
+	sessionToken: String
+	user: UserRef
+}
+
+input AddTagInput {
+	activity: [ActivityRef]
+	blogPost: [BlogPostRef]
+	budget: [BudgetRef]
+	comment: [CommentRef]
+	financialAccount: [FinancialAccountRef]
+	game: [GameRef]
+	media: [MediaRef]
+	note: [NoteRef]
+	person: [PersonRef]
+	tagName: String
+	transaction: [TransactionRef]
+	vendor: [VendorRef]
+}
+
+input AddTransactionInput {
+	budget: [BudgetRef]
+	currency: AllowedCurrency
+	financialAccount: [FinancialAccountRef]
+	media: [MediaRef]
+	note: [NoteRef]
+	occurrence: DateTime
+	participant: [PersonRef]
+	tag: [TagRef]
+	transactionEvent: String
+}
+
+input AddUserInput {
+	name: String
+	email: String
+	emailVerified: DateTime
+	image: String
+	accounts: [AccountRef]
+	sessions: [SessionRef]
+}
+
+input AddVendorInput {
+	media: [MediaRef]
+	note: [NoteRef]
+	tag: [TagRef]
+	vendorName: String
+}
+
+input AddVerboInput {
+	cambiar_de_irregular: String
+	categoria_de_irregular: String
+	english: String
+	spanish: String
+	grupo: Float
+	irregular: Boolean
+	reflexive: Boolean
+	media: [MediaRef]
+	note: [NoteRef]
+	terminacion: AllowedTerminacion
+}
+
+input AddVerificationTokenInput {
+	identifier: String
+	token: String
+	expires: DateTime
+}
+
+input AddWordInput {
+	definition: String
+	f_points: Int
+	s_points: Int
+	in_game: Boolean
+	isFourLetterWord: Boolean
+	media: [MediaRef]
+	note: [NoteRef]
+	tier: Int
+	tongue: String
+	word: String
+}
+
+input AffixFilter {
+	id: [ID!]
+	example: StringHashFilter
+	meaning: StringFullTextFilter_StringHashFilter
+	morpheme: StringHashFilter
+	tongue: AllowedTongue_exact
+	has: [AffixHasFilter]
+	and: [AffixFilter]
+	or: [AffixFilter]
+	not: AffixFilter
+}
+
+input AffixOrder {
+	asc: AffixOrderable
+	desc: AffixOrderable
+	then: AffixOrder
+}
+
+input AffixPatch {
+	example: [String]
+	meaning: [String]
+	media: [MediaRef]
+	morpheme: String
+	note: [NoteRef]
+	tongue: AllowedTongue
+	type: [AllowedTypeAffix]
+}
+
+input AffixRef {
+	id: ID
+	example: [String]
+	meaning: [String]
+	media: [MediaRef]
+	morpheme: String
+	note: [NoteRef]
+	tongue: AllowedTongue
+	type: [AllowedTypeAffix]
+}
+
+input AllowedCurrency_hash {
+	eq: AllowedCurrency
+	in: [AllowedCurrency]
+}
+
+input AllowedTerminacion_exact {
+	eq: AllowedTerminacion
+	in: [AllowedTerminacion]
+	le: AllowedTerminacion
+	lt: AllowedTerminacion
+	ge: AllowedTerminacion
+	gt: AllowedTerminacion
+	between: AllowedTerminacion
+}
+
+input AllowedTongue_exact {
+	eq: AllowedTongue
+	in: [AllowedTongue]
+	le: AllowedTongue
+	lt: AllowedTongue
+	ge: AllowedTongue
+	gt: AllowedTongue
+	between: AllowedTongue
+}
+
+input BlogPostFilter {
+	id: [ID!]
+	body: StringFullTextFilter
+	publishDate: DateTimeFilter
+	title: StringHashFilter
+	has: [BlogPostHasFilter]
+	and: [BlogPostFilter]
+	or: [BlogPostFilter]
+	not: BlogPostFilter
+}
+
+input BlogPostOrder {
+	asc: BlogPostOrderable
+	desc: BlogPostOrderable
+	then: BlogPostOrder
+}
+
+input BlogPostPatch {
+	author: [PersonRef]
+	body: String
+	comment: [CommentRef]
+	media: [MediaRef]
+	note: [NoteRef]
+	publishDate: DateTime
+	published: Boolean
+	tag: [TagRef]
+	title: String
+}
+
+input BlogPostRef {
+	id: ID
+	author: [PersonRef]
+	body: String
+	comment: [CommentRef]
+	media: [MediaRef]
+	note: [NoteRef]
+	publishDate: DateTime
+	published: Boolean
+	tag: [TagRef]
+	title: String
+}
+
+input BudgetFilter {
+	id: [ID!]
+	budgetName: StringHashFilter
+	budgetValue: FloatFilter
+	has: [BudgetHasFilter]
+	and: [BudgetFilter]
+	or: [BudgetFilter]
+	not: BudgetFilter
+}
+
+input BudgetOrder {
+	asc: BudgetOrderable
+	desc: BudgetOrderable
+	then: BudgetOrder
+}
+
+input BudgetPatch {
+	budgetName: String
+	budgetValue: Float
+	media: [MediaRef]
+	note: [NoteRef]
+	partner: [PersonRef]
+	tag: [TagRef]
+	transaction: [TransactionRef]
+}
+
+input BudgetRef {
+	id: ID
+	budgetName: String
+	budgetValue: Float
+	media: [MediaRef]
+	note: [NoteRef]
+	partner: [PersonRef]
+	tag: [TagRef]
+	transaction: [TransactionRef]
+}
+
+input CommentFilter {
+	id: [ID!]
+	body: StringFullTextFilter
+	publishDate: DateTimeFilter
+	has: [CommentHasFilter]
+	and: [CommentFilter]
+	or: [CommentFilter]
+	not: CommentFilter
+}
+
+input CommentOrder {
+	asc: CommentOrderable
+	desc: CommentOrderable
+	then: CommentOrder
+}
+
+input CommentPatch {
+	author: [PersonRef]
+	blogPost: [BlogPostRef]
+	body: String
+	comment: [CommentRef]
+	media: [MediaRef]
+	note: [NoteRef]
+	publishDate: DateTime
+	published: Boolean
+	tag: [TagRef]
+}
+
+input CommentRef {
+	id: ID
+	author: [PersonRef]
+	blogPost: [BlogPostRef]
+	body: String
+	comment: [CommentRef]
+	media: [MediaRef]
+	note: [NoteRef]
+	publishDate: DateTime
+	published: Boolean
+	tag: [TagRef]
+}
+
+input FinancialAccountFilter {
+	id: [ID!]
+	accountName: StringHashFilter
+	currentValue: FloatFilter
+	has: [FinancialAccountHasFilter]
+	and: [FinancialAccountFilter]
+	or: [FinancialAccountFilter]
+	not: FinancialAccountFilter
+}
+
+input FinancialAccountOrder {
+	asc: FinancialAccountOrderable
+	desc: FinancialAccountOrderable
+	then: FinancialAccountOrder
+}
+
+input FinancialAccountPatch {
+	accountName: String
+	currentValue: Float
+	media: [MediaRef]
+	note: [NoteRef]
+	owner: [PersonRef]
+	tag: [TagRef]
+	transaction: [TransactionRef]
+}
+
+input FinancialAccountRef {
+	id: ID
+	accountName: String
+	currentValue: Float
+	media: [MediaRef]
+	note: [NoteRef]
+	owner: [PersonRef]
+	tag: [TagRef]
+	transaction: [TransactionRef]
+}
+
+input GameFilter {
+	id: [ID!]
+	attempts: IntFilter
+	bulls: IntFilter
+	cows: IntFilter
+	score: IntFilter
+	winningWord: StringHashFilter
+	has: [GameHasFilter]
+	and: [GameFilter]
+	or: [GameFilter]
+	not: GameFilter
+}
+
+input GameOrder {
+	asc: GameOrderable
+	desc: GameOrderable
+	then: GameOrder
+}
+
+input GamePatch {
+	attempts: Int
+	bulls: Int
+	cows: Int
+	guess: [String]
+	note: [NoteRef]
+	player: [PersonRef]
+	score: Int
+	tag: [TagRef]
+	winningWord: String
+	won: Boolean
+}
+
+input GameRef {
+	id: ID
+	attempts: Int
+	bulls: Int
+	cows: Int
+	guess: [String]
+	note: [NoteRef]
+	player: [PersonRef]
+	score: Int
+	tag: [TagRef]
+	winningWord: String
+	won: Boolean
+}
+
+input MediaFilter {
+	id: [ID!]
+	occurrance: DateTimeFilter
+	has: [MediaHasFilter]
+	and: [MediaFilter]
+	or: [MediaFilter]
+	not: MediaFilter
+}
+
+input MediaOrder {
+	asc: MediaOrderable
+	desc: MediaOrderable
+	then: MediaOrder
+}
+
+input MediaPatch {
+	activity: [ActivityRef]
+	affix: [AffixRef]
+	blogPost: [BlogPostRef]
+	budget: [BudgetRef]
+	comment: [CommentRef]
+	financialAccount: [FinancialAccountRef]
+	link: String
+	note: [NoteRef]
+	occurrance: DateTime
+	person: [PersonRef]
+	tag: [TagRef]
+	transaction: [TransactionRef]
+	type: MediaType
+	vendor: [VendorRef]
+	verbo: [VerboRef]
+	word: [WordRef]
+}
+
+input MediaRef {
+	id: ID
+	activity: [ActivityRef]
+	affix: [AffixRef]
+	blogPost: [BlogPostRef]
+	budget: [BudgetRef]
+	comment: [CommentRef]
+	financialAccount: [FinancialAccountRef]
+	link: String
+	note: [NoteRef]
+	occurrance: DateTime
+	person: [PersonRef]
+	tag: [TagRef]
+	transaction: [TransactionRef]
+	type: MediaType
+	vendor: [VendorRef]
+	verbo: [VerboRef]
+	word: [WordRef]
+}
+
+input NoteFilter {
+	id: [ID!]
+	note: StringTermFilter
+	has: [NoteHasFilter]
+	and: [NoteFilter]
+	or: [NoteFilter]
+	not: NoteFilter
+}
+
+input NoteOrder {
+	asc: NoteOrderable
+	desc: NoteOrderable
+	then: NoteOrder
+}
+
+input NotePatch {
+	activity: ActivityRef
+	affix: [AffixRef]
+	blogPost: BlogPostRef
+	budget: BudgetRef
+	comment: CommentRef
+	financialAccount: FinancialAccountRef
+	game: GameRef
+	media: MediaRef
+	note: String
+	person: PersonRef
+	tag: TagRef
+	transaction: TransactionRef
+	vendor: VendorRef
+	verbo: VerboRef
+	word: WordRef
+}
+
+input NoteRef {
+	id: ID
+	activity: ActivityRef
+	affix: [AffixRef]
+	blogPost: BlogPostRef
+	budget: BudgetRef
+	comment: CommentRef
+	financialAccount: FinancialAccountRef
+	game: GameRef
+	media: MediaRef
+	note: String
+	person: PersonRef
+	tag: TagRef
+	transaction: TransactionRef
+	vendor: VendorRef
+	verbo: VerboRef
+	word: WordRef
+}
+
+input PersonFilter {
+	id: [ID!]
+	email: StringHashFilter
+	nickname: StringHashFilter
+	role: IntFilter
+	has: [PersonHasFilter]
+	and: [PersonFilter]
+	or: [PersonFilter]
+	not: PersonFilter
+}
+
+input PersonOrder {
+	asc: PersonOrderable
+	desc: PersonOrderable
+	then: PersonOrder
+}
+
+input PersonPatch {
+	activity: [ActivityRef]
+	associate: [PersonRef]
+	blogPost: [BlogPostRef]
+	budget: [BudgetRef]
+	comment: [CommentRef]
+	email: String
+	financialAccount: [FinancialAccountRef]
+	game: [GameRef]
+	guess: [String]
+	isUser: Boolean
+	media: [MediaRef]
+	nickname: [String]
+	note: [NoteRef]
+	password: String
+	profileImageUrl: MediaRef
+	role: Int
+	tag: [TagRef]
+	transaction: [TransactionRef]
+}
+
+input PersonRef {
+	id: ID
+	activity: [ActivityRef]
+	associate: [PersonRef]
+	blogPost: [BlogPostRef]
+	budget: [BudgetRef]
+	comment: [CommentRef]
+	email: String
+	financialAccount: [FinancialAccountRef]
+	game: [GameRef]
+	guess: [String]
+	isUser: Boolean
+	media: [MediaRef]
+	nickname: [String]
+	note: [NoteRef]
+	password: String
+	profileImageUrl: MediaRef
+	role: Int
+	tag: [TagRef]
+	transaction: [TransactionRef]
+}
+
+input SessionFilter {
+	id: [ID!]
+	sessionToken: StringHashFilter
+	has: [SessionHasFilter]
+	and: [SessionFilter]
+	or: [SessionFilter]
+	not: SessionFilter
+}
+
+input SessionOrder {
+	asc: SessionOrderable
+	desc: SessionOrderable
+	then: SessionOrder
+}
+
+input SessionPatch {
+	expires: DateTime
+	sessionToken: String
+	user: UserRef
+}
+
+input SessionRef {
+	id: ID
+	expires: DateTime
+	sessionToken: String
+	user: UserRef
+}
+
+input StringFullTextFilter_StringHashFilter {
+	alloftext: String
+	anyoftext: String
+	eq: String
+	in: [String]
+}
+
+input TagFilter {
+	id: [ID!]
+	tagName: StringHashFilter
+	has: [TagHasFilter]
+	and: [TagFilter]
+	or: [TagFilter]
+	not: TagFilter
+}
+
+input TagOrder {
+	asc: TagOrderable
+	desc: TagOrderable
+	then: TagOrder
+}
+
+input TagPatch {
+	activity: [ActivityRef]
+	blogPost: [BlogPostRef]
+	budget: [BudgetRef]
+	comment: [CommentRef]
+	financialAccount: [FinancialAccountRef]
+	game: [GameRef]
+	media: [MediaRef]
+	note: [NoteRef]
+	person: [PersonRef]
+	tagName: String
+	transaction: [TransactionRef]
+	vendor: [VendorRef]
+}
+
+input TagRef {
+	id: ID
+	activity: [ActivityRef]
+	blogPost: [BlogPostRef]
+	budget: [BudgetRef]
+	comment: [CommentRef]
+	financialAccount: [FinancialAccountRef]
+	game: [GameRef]
+	media: [MediaRef]
+	note: [NoteRef]
+	person: [PersonRef]
+	tagName: String
+	transaction: [TransactionRef]
+	vendor: [VendorRef]
+}
+
+input TransactionFilter {
+	id: [ID!]
+	currency: AllowedCurrency_hash
+	occurrence: DateTimeFilter
+	transactionEvent: StringHashFilter
+	has: [TransactionHasFilter]
+	and: [TransactionFilter]
+	or: [TransactionFilter]
+	not: TransactionFilter
+}
+
+input TransactionOrder {
+	asc: TransactionOrderable
+	desc: TransactionOrderable
+	then: TransactionOrder
+}
+
+input TransactionPatch {
+	budget: [BudgetRef]
+	currency: AllowedCurrency
+	financialAccount: [FinancialAccountRef]
+	media: [MediaRef]
+	note: [NoteRef]
+	occurrence: DateTime
+	participant: [PersonRef]
+	tag: [TagRef]
+	transactionEvent: String
+}
+
+input TransactionRef {
+	id: ID
+	budget: [BudgetRef]
+	currency: AllowedCurrency
+	financialAccount: [FinancialAccountRef]
+	media: [MediaRef]
+	note: [NoteRef]
+	occurrence: DateTime
+	participant: [PersonRef]
+	tag: [TagRef]
+	transactionEvent: String
+}
+
+input UpdateAccountInput {
+	filter: AccountFilter!
+	set: AccountPatch
+	remove: AccountPatch
+}
+
+input UpdateActivityInput {
+	filter: ActivityFilter!
+	set: ActivityPatch
+	remove: ActivityPatch
+}
+
+input UpdateAffixInput {
+	filter: AffixFilter!
+	set: AffixPatch
+	remove: AffixPatch
+}
+
+input UpdateBlogPostInput {
+	filter: BlogPostFilter!
+	set: BlogPostPatch
+	remove: BlogPostPatch
+}
+
+input UpdateBudgetInput {
+	filter: BudgetFilter!
+	set: BudgetPatch
+	remove: BudgetPatch
+}
+
+input UpdateCommentInput {
+	filter: CommentFilter!
+	set: CommentPatch
+	remove: CommentPatch
+}
+
+input UpdateFinancialAccountInput {
+	filter: FinancialAccountFilter!
+	set: FinancialAccountPatch
+	remove: FinancialAccountPatch
+}
+
+input UpdateGameInput {
+	filter: GameFilter!
+	set: GamePatch
+	remove: GamePatch
+}
+
+input UpdateMediaInput {
+	filter: MediaFilter!
+	set: MediaPatch
+	remove: MediaPatch
+}
+
+input UpdateNoteInput {
+	filter: NoteFilter!
+	set: NotePatch
+	remove: NotePatch
+}
+
+input UpdatePersonInput {
+	filter: PersonFilter!
+	set: PersonPatch
+	remove: PersonPatch
+}
+
+input UpdateSessionInput {
+	filter: SessionFilter!
+	set: SessionPatch
+	remove: SessionPatch
+}
+
+input UpdateTagInput {
+	filter: TagFilter!
+	set: TagPatch
+	remove: TagPatch
+}
+
+input UpdateTransactionInput {
+	filter: TransactionFilter!
+	set: TransactionPatch
+	remove: TransactionPatch
+}
+
+input UpdateUserInput {
+	filter: UserFilter!
+	set: UserPatch
+	remove: UserPatch
+}
+
+input UpdateVendorInput {
+	filter: VendorFilter!
+	set: VendorPatch
+	remove: VendorPatch
+}
+
+input UpdateVerboInput {
+	filter: VerboFilter!
+	set: VerboPatch
+	remove: VerboPatch
+}
+
+input UpdateVerificationTokenInput {
+	filter: VerificationTokenFilter!
+	set: VerificationTokenPatch
+	remove: VerificationTokenPatch
+}
+
+input UpdateWordInput {
+	filter: WordFilter!
+	set: WordPatch
+	remove: WordPatch
+}
+
+input UserFilter {
+	id: [ID!]
+	email: StringHashFilter
+	has: [UserHasFilter]
+	and: [UserFilter]
+	or: [UserFilter]
+	not: UserFilter
+}
+
+input UserOrder {
+	asc: UserOrderable
+	desc: UserOrderable
+	then: UserOrder
+}
+
+input UserPatch {
+	name: String
+	email: String
+	emailVerified: DateTime
+	image: String
+	accounts: [AccountRef]
+	sessions: [SessionRef]
+}
+
+input UserRef {
+	id: ID
+	name: String
+	email: String
+	emailVerified: DateTime
+	image: String
+	accounts: [AccountRef]
+	sessions: [SessionRef]
+}
+
+input VendorFilter {
+	id: [ID!]
+	vendorName: StringHashFilter
+	has: [VendorHasFilter]
+	and: [VendorFilter]
+	or: [VendorFilter]
+	not: VendorFilter
+}
+
+input VendorOrder {
+	asc: VendorOrderable
+	desc: VendorOrderable
+	then: VendorOrder
+}
+
+input VendorPatch {
+	media: [MediaRef]
+	note: [NoteRef]
+	tag: [TagRef]
+	vendorName: String
+}
+
+input VendorRef {
+	id: ID
+	media: [MediaRef]
+	note: [NoteRef]
+	tag: [TagRef]
+	vendorName: String
+}
+
+input VerboFilter {
+	id: [ID!]
+	cambiar_de_irregular: StringHashFilter
+	categoria_de_irregular: StringHashFilter
+	english: StringHashFilter
+	spanish: StringHashFilter
+	grupo: FloatFilter
+	terminacion: AllowedTerminacion_exact
+	has: [VerboHasFilter]
+	and: [VerboFilter]
+	or: [VerboFilter]
+	not: VerboFilter
+}
+
+input VerboOrder {
+	asc: VerboOrderable
+	desc: VerboOrderable
+	then: VerboOrder
+}
+
+input VerboPatch {
+	cambiar_de_irregular: String
+	categoria_de_irregular: String
+	english: String
+	spanish: String
+	grupo: Float
+	irregular: Boolean
+	reflexive: Boolean
+	media: [MediaRef]
+	note: [NoteRef]
+	terminacion: AllowedTerminacion
+}
+
+input VerboRef {
+	id: ID
+	cambiar_de_irregular: String
+	categoria_de_irregular: String
+	english: String
+	spanish: String
+	grupo: Float
+	irregular: Boolean
+	reflexive: Boolean
+	media: [MediaRef]
+	note: [NoteRef]
+	terminacion: AllowedTerminacion
+}
+
+input VerificationTokenFilter {
+	id: [ID!]
+	identifier: StringHashFilter
+	token: StringHashFilter
+	has: [VerificationTokenHasFilter]
+	and: [VerificationTokenFilter]
+	or: [VerificationTokenFilter]
+	not: VerificationTokenFilter
+}
+
+input VerificationTokenOrder {
+	asc: VerificationTokenOrderable
+	desc: VerificationTokenOrderable
+	then: VerificationTokenOrder
+}
+
+input VerificationTokenPatch {
+	identifier: String
+	token: String
+	expires: DateTime
+}
+
+input VerificationTokenRef {
+	id: ID
+	identifier: String
+	token: String
+	expires: DateTime
+}
+
+input WordFilter {
+	id: [ID!]
+	definition: StringFullTextFilter
+	f_points: IntFilter
+	s_points: IntFilter
+	tier: IntFilter
+	tongue: StringHashFilter
+	word: StringHashFilter
+	has: [WordHasFilter]
+	and: [WordFilter]
+	or: [WordFilter]
+	not: WordFilter
+}
+
+input WordOrder {
+	asc: WordOrderable
+	desc: WordOrderable
+	then: WordOrder
+}
+
+input WordPatch {
+	definition: String
+	f_points: Int
+	s_points: Int
+	in_game: Boolean
+	isFourLetterWord: Boolean
+	media: [MediaRef]
+	note: [NoteRef]
+	tier: Int
+	tongue: String
+	word: String
+}
+
+input WordRef {
+	id: ID
+	definition: String
+	f_points: Int
+	s_points: Int
+	in_game: Boolean
+	isFourLetterWord: Boolean
+	media: [MediaRef]
+	note: [NoteRef]
+	tier: Int
+	tongue: String
+	word: String
+}
+
+#######################
+# Generated Query
+#######################
+
+type Query {
+	getAccount(id: ID!): Account
+	queryAccount(filter: AccountFilter, order: AccountOrder, first: Int, offset: Int): [Account]
+	aggregateAccount(filter: AccountFilter): AccountAggregateResult
+	getActivity(id: ID!): Activity
+	queryActivity(filter: ActivityFilter, order: ActivityOrder, first: Int, offset: Int): [Activity]
+	aggregateActivity(filter: ActivityFilter): ActivityAggregateResult
+	getAffix(id: ID!): Affix
+	queryAffix(filter: AffixFilter, order: AffixOrder, first: Int, offset: Int): [Affix]
+	aggregateAffix(filter: AffixFilter): AffixAggregateResult
+	getBlogPost(id: ID!): BlogPost
+	queryBlogPost(filter: BlogPostFilter, order: BlogPostOrder, first: Int, offset: Int): [BlogPost]
+	aggregateBlogPost(filter: BlogPostFilter): BlogPostAggregateResult
+	getBudget(id: ID!): Budget
+	queryBudget(filter: BudgetFilter, order: BudgetOrder, first: Int, offset: Int): [Budget]
+	aggregateBudget(filter: BudgetFilter): BudgetAggregateResult
+	getComment(id: ID!): Comment
+	queryComment(filter: CommentFilter, order: CommentOrder, first: Int, offset: Int): [Comment]
+	aggregateComment(filter: CommentFilter): CommentAggregateResult
+	getFinancialAccount(id: ID!): FinancialAccount
+	queryFinancialAccount(filter: FinancialAccountFilter, order: FinancialAccountOrder, first: Int, offset: Int): [FinancialAccount]
+	aggregateFinancialAccount(filter: FinancialAccountFilter): FinancialAccountAggregateResult
+	getGame(id: ID!): Game
+	queryGame(filter: GameFilter, order: GameOrder, first: Int, offset: Int): [Game]
+	aggregateGame(filter: GameFilter): GameAggregateResult
+	getMedia(id: ID!): Media
+	queryMedia(filter: MediaFilter, order: MediaOrder, first: Int, offset: Int): [Media]
+	aggregateMedia(filter: MediaFilter): MediaAggregateResult
+	getNote(id: ID!): Note
+	queryNote(filter: NoteFilter, order: NoteOrder, first: Int, offset: Int): [Note]
+	aggregateNote(filter: NoteFilter): NoteAggregateResult
+	getPerson(id: ID!): Person
+	queryPerson(filter: PersonFilter, order: PersonOrder, first: Int, offset: Int): [Person]
+	aggregatePerson(filter: PersonFilter): PersonAggregateResult
+	getSession(id: ID!): Session
+	querySession(filter: SessionFilter, order: SessionOrder, first: Int, offset: Int): [Session]
+	aggregateSession(filter: SessionFilter): SessionAggregateResult
+	getTag(id: ID!): Tag
+	queryTag(filter: TagFilter, order: TagOrder, first: Int, offset: Int): [Tag]
+	aggregateTag(filter: TagFilter): TagAggregateResult
+	getTransaction(id: ID!): Transaction
+	queryTransaction(filter: TransactionFilter, order: TransactionOrder, first: Int, offset: Int): [Transaction]
+	aggregateTransaction(filter: TransactionFilter): TransactionAggregateResult
+	getVendor(id: ID!): Vendor
+	queryVendor(filter: VendorFilter, order: VendorOrder, first: Int, offset: Int): [Vendor]
+	aggregateVendor(filter: VendorFilter): VendorAggregateResult
+	getVerbo(id: ID!): Verbo
+	queryVerbo(filter: VerboFilter, order: VerboOrder, first: Int, offset: Int): [Verbo]
+	aggregateVerbo(filter: VerboFilter): VerboAggregateResult
+	getUser(id: ID!): User
+	queryUser(filter: UserFilter, order: UserOrder, first: Int, offset: Int): [User]
+	aggregateUser(filter: UserFilter): UserAggregateResult
+	getVerificationToken(id: ID!): VerificationToken
+	queryVerificationToken(filter: VerificationTokenFilter, order: VerificationTokenOrder, first: Int, offset: Int): [VerificationToken]
+	aggregateVerificationToken(filter: VerificationTokenFilter): VerificationTokenAggregateResult
+	getWord(id: ID!): Word
+	queryWord(filter: WordFilter, order: WordOrder, first: Int, offset: Int): [Word]
+	aggregateWord(filter: WordFilter): WordAggregateResult
+}
+
+#######################
+# Generated Mutations
+#######################
+
+type Mutation {
+	addAccount(input: [AddAccountInput!]!): AddAccountPayload
+	updateAccount(input: UpdateAccountInput!): UpdateAccountPayload
+	deleteAccount(filter: AccountFilter!): DeleteAccountPayload
+	addActivity(input: [AddActivityInput!]!): AddActivityPayload
+	updateActivity(input: UpdateActivityInput!): UpdateActivityPayload
+	deleteActivity(filter: ActivityFilter!): DeleteActivityPayload
+	addAffix(input: [AddAffixInput!]!): AddAffixPayload
+	updateAffix(input: UpdateAffixInput!): UpdateAffixPayload
+	deleteAffix(filter: AffixFilter!): DeleteAffixPayload
+	addBlogPost(input: [AddBlogPostInput!]!): AddBlogPostPayload
+	updateBlogPost(input: UpdateBlogPostInput!): UpdateBlogPostPayload
+	deleteBlogPost(filter: BlogPostFilter!): DeleteBlogPostPayload
+	addBudget(input: [AddBudgetInput!]!): AddBudgetPayload
+	updateBudget(input: UpdateBudgetInput!): UpdateBudgetPayload
+	deleteBudget(filter: BudgetFilter!): DeleteBudgetPayload
+	addComment(input: [AddCommentInput!]!): AddCommentPayload
+	updateComment(input: UpdateCommentInput!): UpdateCommentPayload
+	deleteComment(filter: CommentFilter!): DeleteCommentPayload
+	addFinancialAccount(input: [AddFinancialAccountInput!]!): AddFinancialAccountPayload
+	updateFinancialAccount(input: UpdateFinancialAccountInput!): UpdateFinancialAccountPayload
+	deleteFinancialAccount(filter: FinancialAccountFilter!): DeleteFinancialAccountPayload
+	addGame(input: [AddGameInput!]!): AddGamePayload
+	updateGame(input: UpdateGameInput!): UpdateGamePayload
+	deleteGame(filter: GameFilter!): DeleteGamePayload
+	addMedia(input: [AddMediaInput!]!): AddMediaPayload
+	updateMedia(input: UpdateMediaInput!): UpdateMediaPayload
+	deleteMedia(filter: MediaFilter!): DeleteMediaPayload
+	addNote(input: [AddNoteInput!]!): AddNotePayload
+	updateNote(input: UpdateNoteInput!): UpdateNotePayload
+	deleteNote(filter: NoteFilter!): DeleteNotePayload
+	addPerson(input: [AddPersonInput!]!): AddPersonPayload
+	updatePerson(input: UpdatePersonInput!): UpdatePersonPayload
+	deletePerson(filter: PersonFilter!): DeletePersonPayload
+	addSession(input: [AddSessionInput!]!): AddSessionPayload
+	updateSession(input: UpdateSessionInput!): UpdateSessionPayload
+	deleteSession(filter: SessionFilter!): DeleteSessionPayload
+	addTag(input: [AddTagInput!]!): AddTagPayload
+	updateTag(input: UpdateTagInput!): UpdateTagPayload
+	deleteTag(filter: TagFilter!): DeleteTagPayload
+	addTransaction(input: [AddTransactionInput!]!): AddTransactionPayload
+	updateTransaction(input: UpdateTransactionInput!): UpdateTransactionPayload
+	deleteTransaction(filter: TransactionFilter!): DeleteTransactionPayload
+	addVendor(input: [AddVendorInput!]!): AddVendorPayload
+	updateVendor(input: UpdateVendorInput!): UpdateVendorPayload
+	deleteVendor(filter: VendorFilter!): DeleteVendorPayload
+	addVerbo(input: [AddVerboInput!]!): AddVerboPayload
+	updateVerbo(input: UpdateVerboInput!): UpdateVerboPayload
+	deleteVerbo(filter: VerboFilter!): DeleteVerboPayload
+	addUser(input: [AddUserInput!]!): AddUserPayload
+	updateUser(input: UpdateUserInput!): UpdateUserPayload
+	deleteUser(filter: UserFilter!): DeleteUserPayload
+	addVerificationToken(input: [AddVerificationTokenInput!]!): AddVerificationTokenPayload
+	updateVerificationToken(input: UpdateVerificationTokenInput!): UpdateVerificationTokenPayload
+	deleteVerificationToken(filter: VerificationTokenFilter!): DeleteVerificationTokenPayload
+	addWord(input: [AddWordInput!]!): AddWordPayload
+	updateWord(input: UpdateWordInput!): UpdateWordPayload
+	deleteWord(filter: WordFilter!): DeleteWordPayload
+}
+

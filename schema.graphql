@@ -1,0 +1,171 @@
+# Types
+
+type User {
+    id: ID!
+    email: String! @id @search(by: [exact])
+    transactions: [Transaction] @hasInverse(field: user)
+    accounts: [Account] @hasInverse(field: user)
+    vendors: [Vendor] @hasInverse(field: user)
+    contacts: [Contact] @hasInverse(field: user)
+	savingsPlans: [SavingsPlan] @hasInverse(field: user)
+	investmentPlans: [InvestmentPlan] @hasInverse(field: user)
+    tags: [Tag] @hasInverse(field: users)
+    gameData: GameData # For the commodities game
+}
+
+type Transaction {
+    id: ID!
+    user: User!
+    date: DateTime!
+    amount: Float!
+    category: Category!
+    description: String @search(by: [fulltext])
+    account: Account
+    vendor: Vendor
+    tags: [Tag] @hasInverse(field: transactions)
+}
+
+type Category {
+    id: ID!
+    name: String! @id
+}
+
+type Account {
+    id: ID!
+    user: User!
+    plaidAccountId: String # Optional, for Plaid integration
+    name: String!
+    type: String
+    transactions: [Transaction] @hasInverse(field: account)
+    contacts: [Contact] @hasInverse(field: account)
+    tags: [Tag] @hasInverse(field: accounts)
+}
+
+type Vendor {
+    id: ID!
+    user: User!
+    name: String! @search(by: [fulltext, exact])
+    contacts: [Contact] @hasInverse(field: vendor)
+    transactions: [Transaction] @hasInverse(field: vendor)
+    tags: [Tag] @hasInverse(field: vendors)
+}
+
+type Contact {
+    id: ID!
+    user: User!
+    name: String!
+    email: String
+    phone: String
+    vendor: Vendor
+    account: Account
+    tags: [Tag] @hasInverse(field: contacts)
+}
+
+type Tag {
+    id: ID!
+    name: String! @id # Unique tag names across the app
+    users: [User] @hasInverse(field: tags)
+    transactions: [Transaction] @hasInverse(field: tags)
+    accounts: [Account] @hasInverse(field: tags)
+    vendors: [Vendor] @hasInverse(field: tags)
+	contacts: [Contact] @hasInverse(field: tags)
+	savingsPlans: [SavingsPlan] @hasInverse(field: tags)
+	investmentPlans: [InvestmentPlan] @hasInverse(field: tags)
+}
+
+type SavingsPlan {
+	id: ID!
+	user: User!
+	name: String!
+	goalAmount: Float!
+	currentAmount: Float!
+	targetDate: DateTime
+	tags: [Tag] @hasInverse(field: savingsPlans)
+	strategy: String
+}
+
+type InvestmentPlan {
+	id: ID!
+	user: User!
+	name: String!
+	initialInvestment: Float!
+	currentValue: Float!
+	targetReturn: Float
+	riskTolerance: String
+	tags: [Tag] @hasInverse(field: investmentPlans)
+	strategy: String
+}
+
+# --- Commodities Game Types ---
+
+type GameData {
+  id: ID!
+  cash: Float!
+  commodities: [CommodityInventory] @hasInverse(field: gameData)
+  transactions: [GameTransaction]
+}
+
+type Commodity {
+    id: ID!
+    name: String! @id # e.g., "Gold", "Silver", "Crude Oil"
+    unit: String! # e.g., "oz", "barrel", "bushel"
+    currentPrice: Float! #  Could be updated periodically
+    historicalPrices: [PriceHistory]
+}
+
+type PriceHistory {
+    id: ID!
+    commodity: Commodity!
+    timestamp: DateTime!
+    price: Float!
+}
+
+type CommodityInventory {
+    id: ID!
+    gameData: GameData!
+    commodity: Commodity!
+    quantity: Float!
+    averagePurchasePrice: Float!
+}
+
+type GameTransaction {
+    id: ID!
+    user: User!
+    commodity: Commodity!
+    type: String! # "buy" or "sell"
+    quantity: Float!
+    price: Float!
+    timestamp: DateTime!
+    fees: Float!
+}
+
+# --- For Arbitrage (Future) ---
+type Market {
+  id: ID!
+  name: String!
+  commodityPrices: [MarketCommodityPrice] @hasInverse(field: market)
+}
+
+type MarketCommodityPrice {
+    id: ID!
+    market: Market!
+    commodity: Commodity!
+    price: Float!
+}
+
+# --- For Supply/Demand Simulation (Future) ---
+type Event {
+    id: ID!
+    name: String!
+    description: String
+    impact: [EventImpact]
+}
+
+type EventImpact {
+    id: ID!
+    event: Event!
+    commodity: Commodity
+    market: Market
+    priceChange: Float!
+    duration: Int
+}

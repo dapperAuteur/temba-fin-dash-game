@@ -1,0 +1,4 @@
+type TestType {
+    id: ID!
+    name: String!
+}
