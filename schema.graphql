@@ -1,4 +1,41 @@
+enum AllowedTerminacion {
+  AR
+  ER
+  IR
+}
+
+enum AllowedTongue {
+  ENGLISH
+  SPANISH
+}
+
+enum AllowedTypeAffix {
+  PREFIX
+  PREFIXIOID
+  INFIX
+  CIRCUMFIX
+  INTERFIX
+  DUPLIFIX
+  TRANSFIX
+  SIMULFIX
+  SUPRAFIX
+  DISFIX
+  STEM
+  SUFFIX
+  SUFFIXOID
+  NA
+}
+
 # Types
+
+type Affix {
+  id: ID!
+  example: [String] @search(by: [hash])
+  meaning: [String] @search(by: [fulltext, hash])
+  morpheme: String @search(by: [hash])
+  tongue: AllowedTongue @search(by: [exact])
+  type: [AllowedTypeAffix]
+}
 
 type User {
     id: ID!
