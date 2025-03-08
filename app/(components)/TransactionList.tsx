@@ -1,4 +1,6 @@
 import React from 'react';
+import { useQuery } from '@apollo/client';
+import { GET_TRANSACTIONS } from './../../lib/graphql';
 
 interface Transaction {
   id: string; // Add an ID for key prop
@@ -12,10 +14,17 @@ interface Transaction {
 }
 
 interface Props {
-  transactions: Transaction[];
+  // transactions: Transaction[];
 }
 
-const TransactionList: React.FC<Props> = ({ transactions }) => {
+const TransactionList: React.FC<Props> = () => {
+  const { loading, error, data } = useQuery(GET_TRANSACTIONS);
+
+  if (loading) return <p>Loading...</p>;
+  if (error) return <p>Error: {error.message}</p>;
+
+  const transactions: Transaction[] = data?.queryTransaction || []; // Safely access data
+
   return (
     <div className="bg-white p-4 rounded shadow">
       <h2 className="text-lg font-semibold mb-2">Transactions</h2>

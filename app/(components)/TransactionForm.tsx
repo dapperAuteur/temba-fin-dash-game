@@ -1,4 +1,6 @@
 import React, { useState } from 'react';
+import { useMutation } from '@apollo/client';
+import { ADD_TRANSACTION, GET_TRANSACTIONS } from './../../lib/graphql';
 
 interface TransactionFormData {
   date: string;
@@ -11,10 +13,10 @@ interface TransactionFormData {
 }
 
 interface Props {
-  onAddTransaction: (transaction: TransactionFormData) => void;
+  // onAddTransaction: (transaction: TransactionFormData) => void;
 }
 
-const TransactionForm: React.FC<Props> = ({ onAddTransaction }) => {
+const TransactionForm: React.FC<Props> = () => {
   const [formData, setFormData] = useState<TransactionFormData>({
     date: new Date().toISOString().split('T')[0], // Default to today's date
     amount: 0,
@@ -25,25 +27,50 @@ const TransactionForm: React.FC<Props> = ({ onAddTransaction }) => {
     tags: ''
   });
 
+  const [addTransaction, { loading, error }] = useMutation(ADD_TRANSACTION, {
+    // Refetch the transaction list after adding a new transaction
+    refetchQueries: [{ query: GET_TRANSACTIONS }],
+  });
+
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
     setFormData({ ...formData, [name]: value });
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    onAddTransaction(formData);
-    // Reset the form after submission (optional)
-    setFormData({
-      date: new Date().toISOString().split('T')[0],
-      amount: 0,
-      category: '',
-      description: '',
-      vendor: '', //Clear vendor on submit
-      account: '',
-      tags: ''
-    });
+    try {
+      await addTransaction({
+        variables: {
+          transaction: {
+            date: formData.date,
+            amount: parseFloat(formData.amount.toString()), // Ensure amount is a number
+            category: formData.category,
+            description: formData.description,
+            vendor: formData.vendor,
+            account: formData.account,
+            tags: formData.tags
+          },
+        },
+      });
+      // Reset the form after successful submission
+      setFormData({
+        date: new Date().toISOString().split('T')[0],
+        amount: 0,
+        category: '',
+        description: '',
+        vendor: '',
+        account: '',
+        tags: ''
+      });
+    } catch (err) {
+      // Handle errors (e.g., display an error message to the user)
+      console.error("Error adding transaction:", err);
+    }
   };
+
+  if (loading) return <p>Submitting...</p>;
+  if (error) return <p>Error submitting transaction: {error.message}</p>;
 
   return (
     <form onSubmit={handleSubmit} className="bg-white p-4 rounded shadow">
@@ -72,7 +99,9 @@ const TransactionForm: React.FC<Props> = ({ onAddTransaction }) => {
         />
       </div>
       <div className="mb-4">
-        <label htmlFor="category" className="block text-sm font-medium text-gray-700">Category</label>
+        <label htmlFor="category" className="block text-sm font-medium text-gray-700">
+          Category
+        </label>
         <input
           type="text"
           id="category"
@@ -118,7 +147,9 @@ const TransactionForm: React.FC<Props> = ({ onAddTransaction }) => {
         />
       </div>
       <div className="mb-4">
-        <label htmlFor="description" className="block text-sm font-medium text-gray-700">Description</label>
+        <label htmlFor="description" className="block text-sm font-medium text-gray-700">
+          Description
+        </label>
         <textarea
           id="description"
           name="description"
